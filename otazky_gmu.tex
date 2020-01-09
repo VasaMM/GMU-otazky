@@ -17,7 +17,8 @@
 
 
 \section{Popište základní principy návrhu energeticky úsporného procesoru CPU/GPU, jak se vyhodnocuje energetická úspornost.}
-	Energetická úspornost: MFLOPS/W
+	Vyhodnocuje se pomocí poměru MFLOPS/W
+	
 	\begin{itemize}
 		\setlength\itemsep{0em}
 		\item další snižovaní napájecího napětí není možné
@@ -78,8 +79,15 @@
 	Vhodnými úlohami pro zpracování na GPU je například zpracování videa, zvuku či řeči, provádění fyzikálních simulací (kapaliny, osvětlení, počasí) anebo třeba úlohy z kryptografie.
 
 
-\todo{Popište koncepci a vlastnosti různých typů Streaming Multiprocesoru}
-	GMU 08
+\section{Popište koncepci a vlastnosti různých typů Streaming Multiprocesoru}
+	Většinu plochy čipu GPU zabírá velké množství relativně jednoduchých skalárních procesorů, případně jednotek VLIW, které jsou organizovány do větších celků zvaných \emph{streaming multiprocesory}.
+	Vzhledem k tomu, že se jedná o architekturu SIMT, řízení jednotek a plánování instrukcí je jednoduché a spolu s velmi malou vyrovnávací pamětí zabírá malé procento plochy GPU čipu.
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=0.8\textwidth]{cpu_vs_gpu.png}
+		\caption{Porovnání struktury CPU a GPU}
+		\label{fig:cpu_vs_gpu}
+	\end{figure}
 	
 	
 \section{Popište principy komprese dat v systému Pascal (delta-komprese a další).}
@@ -136,11 +144,28 @@
 
 	
 	
-\todo{Popište vývoj unifikovaného adresového prostoru, principy činnosti, a jeho hardwarovou podporu.}
+\section{Popište vývoj unifikovaného adresového prostoru, principy činnosti, a jeho hardwarovou podporu.}
+	\begin{itemize}
+		\setlength\itemsep{0em}
+		\item Programátor nebude muset pracovat s více paměťovými prostory a limitující přenosovou šířkou pásma na paměť a systém bude celkově energeticky úspornější
+		\item Společně s koherencí cache zavádí GCN virtuální paměť jako kombinaci hardwarové podpory a driveru
+		\item Virtuální paměť GCN je definovaná jako kompatibilní s x86
+		\item Tím se zjednoduší přenášení dat mezi CPU a GPU
+		\item Dále vytváří možnost bez problémů sdílet jediný adresový prostor pro jednotky CPU i GPU
+		\item Sdílení dat bez jejich kopírování je důležitý faktor výkonnosti i příkonové úspornosti v heterogenních systémech
+	\end{itemize}
 	
 	
-\todo{Popište principy návrhu energeticky úsporného GPU pro mobilní zařízení.}
-	GMU 10
+\section{Popište principy návrhu energeticky úsporného GPU pro mobilní zařízení.}
+	\begin{itemize}
+		\setlength\itemsep{0em}
+		\item V režimu nízké kvality je průměrná kvalita obrázku 26,89 dB s úsporou energie 33,66 \%
+		\item V režimu vysoké kvality se dosahuje v průměru 45,94 dB a úspory energie 31,63 \%
+		\item Výslednou kvalitu obrázku může vybrat uživatel
+		\item Výběr přesnosti se provádí v zásadě automaticky a neovlivňuje vlastní program shaderu
+		\item Návrh systému EHPS používá FP se sníženou přesností na 32 bitech a FX na 24 bitech, ALU SIMD a SFU pro úsporu energie
+		\item Základní technikou úspory energie v shaderu je používat pevnou řádovou čárku a snížit přesnost čísel s pohyblivou řádovou čárkou
+	\end{itemize}
 	
 	
 \todo{Popište hlavní vývojové etapy a principy grafických systémů Mali pro mobilní zařízení.}
@@ -157,7 +182,7 @@
 \todo{Popište formáty dat podporované v grafice Mali, skalární i vektorové.}
 	
 	
-\todo{Popište a zdůvodněte principy tří základních typů komprese textur - ztrátové, bezeztrátové a adaptivní.}
+\section{Popište a zdůvodněte principy tří základních typů komprese textur - ztrátové, bezeztrátové a adaptivní.}
 	\subsection*{Komprese ASTC}
 		Adaptive Scalable Texture Compression je kompresní metoda ARM. Je to ztrátová metoda pro kompresi a dekompresi textur, ukládaných v bufferech v pamětech DDR – Double Data Rate.
 		
@@ -250,17 +275,22 @@
 
 
 \todo{Jakým způsobem je možné synchronizovat úlohy ve frontě příkazů s vykonáváním mimo pořadí (out-of-order execution) nebo mezi frontami v OpenCL?}
+	Pomocí eventů
 
 
-\todo{Jakým způsobem se eliminuje/zmírňuje dopad aritmetických/paměťových latencí.}
+\section{Jakým způsobem se eliminuje/zmírňuje dopad aritmetických/paměťových latencí.}
 	Pokud nějaké vlákno čeká vlivem latence $\rightarrow$ je místo něj spuštěno jiné vlákno, pokud máme přístup k dostatečnému množství vláken které lze spustit můžeme kompletně vyblokovat efekty latence.
 
 
-\todo{Co je to konflikt banků v lokální paměti a kdy vzniká?}
+\section{Co je to konflikt banků v lokální paměti a kdy vzniká?}
+	Banky jsou malé paměťové elementy (přístup do banky zabere 2 cykly) o velikosti 4 B.Nedojde-li ke konfliktu bank, lze k nim přistupovat současně prostřednictvím \emph{half-warpu}. V rámci celého warpu se jedná o 2 “transakce”, kde jedna je pro dolní a druhá pro horní \emph{half-warp}. Konflikt bank spočívá v tom, že dvě paměťové adresy v rámci half-warpu odkazují do stejné banky. V takovém případě se přístup do bank serializuje a není již současný.
 
 
-\todo{Co je to zarovnaný přístup do paměti?}
-	Přístup k datům postupně jak jsou v paměti – je třeba si je takto přichystat aby se vždy přistupovalo k smysluplným datům -– toto umožňuje lépe pracovat s pamětí –- zlepšuje to práci cache a plně se využije načítání větších bloků paměti najednou
+\section{Co je to zarovnaný přístup do paměti?}
+	Přístup k datům postupně jak jsou v paměti – je třeba si je takto přichystat aby se vždy přistupovalo k smysluplným datům -– toto umožňuje lépe pracovat s pamětí –- zlepšuje to práci cache a plně se využije načítání větších bloků paměti najednou.
+	
+	Obvykle se doporučuje zarovnávat paměť podle velikosti cache-line, protože jinak může jeden proces zabrat $\sfrac{2}{3}$ řádku a další po něm následující musí jít přes dvě cache-line a bude pomalejší. Ideálně teda zarovnat na celý řádek i když se mrhá daty. Taky přístup k datům je pak rozumnější (indexy).
+	
 
 
 \section{Popište konstantní/uniformní paměť.}
@@ -272,8 +302,7 @@
 
 
 \todo{K čemu slouží texturovací jednotky?}
-	Urychleni prace s texturami, obsahuji operace specificke texturam – asi hlavne interpolaci a mozna i nejakou specifickou praci s pameti
-	Řekl bych, že mapují textury na vygenerované polygony.
+	Urychleni prace s texturami, obsahuji operace specificke texturam – asi hlavne interpolaci a mozna i nejakou specifickou praci s pameti.
 
 
 \todo{Jaké jsou rozdíly mezi bufferem a texturou v OpenCL?}
@@ -310,6 +339,7 @@
 
 
 \section{K čemu slouží atomické instrukce? Popište jejich vlastnosti a příklad algoritmu kde je možné je využít.}
+	\label{sec:atomicke_instrukce}
 	K výlučnému přístupu k daným datům a zabráněním WAR, WAW a podobných paměťových chyb. 
 	
 	Použití třeba u paralelní redukce (suma, min, max, \dots) kdy všechny vlákna chtějí přičíst svou hodnotu k celkovému výsledku, ale bez výlučného přístupu jeden udělá \texttt{sum += $y_1$} a než zapíše, tak jiný udělá své \texttt{sum += $y_2$} a změní původní hodnotu a opožděný první mu ji přepíše a tím se znehodnotí výsledek.
@@ -326,34 +356,34 @@
 	\end{itemize}
 
 
-\todo{Co je to obsazenost multiprocesoru (occupancy), na čem je závislá?}
-	Vytíženost multiprocessoru – čím větší tím lepší, závisí na divergenci vláken a na správném rozložení pracovních skupin
-	-- Pro maximální rychlost výpočtů má smysl co největší obsazenost, ale když vlákna nemakají (není pro ně práce) je vhodné uvolnit místo pro jiné, ať se nebrzdí výpočet jiných workgroup a podobně. Vhodné je taky uvažovat nad rozmístěním vláken v rámci multiprocesoru.
-	Něco víc k tomu? Asi jo možná?
-	-> GMU 06 -> 4
-	Obsazenost multiprocesoru (occupancy)
-	\% naalokovanych vláken z maximálního počtu
-	alokovatelnych vláken na multiprocesor
-	čím větší \% tím větší množství aktivních warpu /
-	multiprocesor -> lepší pokrytí aritmetických / paměťových
-	latencí
-	vlákna se alokují po celých skupinách
-	Vliv na obsazenost má:
-	spotřeba lokální pameti/skupinu -> maximální velikost na
-	nových GPU typicky 64kB -- 96kb/multiprocesor
-	spotřeba registru/vlakno -> maximální velikost na nových
-	GPU typicky 64k/multiprocesor
-	velikost skupiny -> na nových GPU lze naalokovat
-	maximálně 16 - 32 skupin
-	příliš malé množství vlaken/skupinu -> limitace maximálním
-	množstvím skupin (výjimkou je 64 vlaken/skupinu u AMD GPU -> možnost 100\% zaplnění)
-	příliš velké skupiny -> velký dopad synchronizačních funkcí,
-	slabá granularita alokace skupin
-	Výpočet spotřeby: NVIDIA occupancy calculator
+\section{Co je to obsazenost multiprocesoru (occupancy), na čem je závislá?}
+	Vytíženost multiprocessoru –- čím větší tím lepší, závisí na divergenci vláken a na správném rozložení pracovních skupin
+	
+	Pro maximální rychlost výpočtů má smysl co největší obsazenost, ale když vlákna nemakají (není pro ně práce) je vhodné uvolnit místo pro jiné, ať se nebrzdí výpočet jiných workgroup a podobně. Vhodné je taky uvažovat nad rozmístěním vláken v rámci multiprocesoru.
+
+	\subsection*{Obsazenost multiprocesoru (occupancy)}
+		\begin{itemize}
+			\setlength\itemsep{0em}
+			\item \% naalokovaných vláken z maximálního počtu
+			\item alokovatelných vláken na multiprocesor
+			\item čím větší \% tím větší množství aktivních warpu na multiprocesor $\rightarrow$ lepší pokrytí aritmetických či paměťových latencí
+			\item vlákna se alokují po celých skupinách
+		\end{itemize}
+	
+	\subsection*{Vliv na obsazenost}
+		\begin{itemize}
+			\setlength\itemsep{0em}
+			\item slabá granularita alokace skupin
+			\item příliš velké skupiny $\rightarrow$ velký dopad synchronizačních funkcí
+			\item příliš malé množství vlaken/skupinu $\rightarrow$ limitace maximálním množstvím skupin
+			\item velikost skupiny $\rightarrow$ na nových GPU lze naalokovat maximálně 16 - 32 skupin
+			\item spotřeba registrů na vlákno $\rightarrow$ maximální velikost na nových GPU typicky 64 kb na multiprocesor
+			\item spotřeba lokální paměti na skupinu $\rightarrow$ maximální velikost na nových GPU typicky 64kB -- 96kb na multiprocesor
+		\end{itemize}
 
 
 \todo{Co je to aritmetická a paměťová latence?}
-	Doba čekání na dokončení paměťových operací a aritmetických operací – načítání dat zpravidla trvá více než jeden takt, podobně tomu bývá u dělení a jiných složitých aritmetických operací
+	Doba čekání na dokončení paměťových operací a aritmetických operací – načítání dat zpravidla trvá více než jeden takt, podobně tomu bývá u dělení a jiných složitých aritmetických operací.
 	
 	\subsection*{Aritmetická latence}
 	\begin{itemize}
@@ -371,10 +401,18 @@
 
 \section{K čemu slouží paralelní redukce?}
 	Paralelizace cyklu se závislostí na předešlé iteraci při operaci která je asociativní -- jde ze složitosti $O(n)$ na $O(log(n))$
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.6\textwidth]{redukce.png}
+		\caption{Příklad paralelní redukce}
+		\label{fig:redukce}
+	\end{figure}
 
 
 \section{Co je to dynamický paralelismus?}
 	Počet aktivních vláken se mění během výpočtu (došla práce pro některé vlákna, tak je zruším).
+	
+	Schopnost vlákna kernelu založit další kernel
 	
 
 \todo{Jaké jsou možné typy přenosů dat mezi CPU a GPU?}
@@ -384,7 +422,14 @@
 	Přímý přístup k paměti, používá se hlavně ke zvýšení propustnosti paměti.
 	
 
-\todo{K čemu slouží operace shuffle?}
+\section{K čemu slouží operace shuffle?}
+	Výměna dat mezi vlákny ve warpu
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.6\textwidth]{shuffle.png}
+		\caption{Paralelní redukce s shuffle}
+		\label{fig:shuffle}
+	\end{figure}
 
 
 \section{Vyjmenujte alespoň 3 api pro GP-GPU.}
@@ -395,13 +440,42 @@
 	Softwarový nástroj překládající zdrojové kódy různých platforem (OpenGL, CUDA, \dots) na jednotnou nízkoúrovňovou API. Cílem je zjednodušit vývoj a umožnit použití všeho na všem.
 	
 
-\todo{K čemu slouží operace ballot?}
+\section{K čemu slouží operace ballot?}
+	\begin{itemize}
+		\setlength\itemsep{0em}
+		\item Speciální instrukce \texttt vrací bitovou masku
+		\item Umožňuje komunikaci mezi vlákny ve warpu/wavefronte
+		\item Každé vlákno ve warpu vyhodnotí podmínku a zapíše	výsledek na bit proměnné jehož číslo odpovídá číslu vlákna ve warpu
+		\item \texttt{ballot} instrukce je možná na NVIDIA i AMD
+		\item délka warpu je různá (32, 64 bit)
+		\item \texttt{ballot} lze simulovat pomocí lokální paměti, ale je to pomalejší
+	\end{itemize}
 
 
-\todo{K čemu lze využít atomicCompSwap?}
+\section{K čemu lze využít atomicCompSwap?}
+	viz \ref{sec:atomicke_instrukce}
+	
+	Instrukci \texttt{atomicCompSwap} lze použít pro implementaci nepodporovaných instrukcí jako jsou například: \texttt{atomicMax}, \texttt{atomicMin}
+	
+	\texttt{atomicCompSwap(mem, compare, data)} provede atomické porovnání \texttt{mem} a \texttt{compare}. Pokud se rovnají, pak se obsah \texttt{data} zapíše do \texttt{mem}, jinak se nedělá nic. Funkce vrací původní obsah \texttt{mem} bez ohledu na výsledek porovnání.
+	
+	Možná použití například v řadících algoritmech -- porovnej dvě položky a když jsou opačně, prohoď. (Atomicky proto, aby soused nepracoval s mojí položkou a já neprohodil nesmysl.)	
 
 
 \todo{Jaký je vztah mezi NDRange/Grid/Dispatch, pracovní skupinou a vláknem/invokací?}
+	Pracovní skupina se skládá z vláken
+
+	NDRange (openCL)
+	\begin{itemize}
+		\setlength\itemsep{0em}
+		\item global size -- počet vláken celkově v dané dimenzi
+		\item local size - počet vláken v jedné pracovní skupině
+		\item počet pracovních grup je určen z global a local size hodnot
+	\end{itemize}
+
+	Grid (CUDA) -- 3 dimenze -- počet pracovních grup?
+
+	Dispatch (OpenGL) -- funkce která spustí počet pracovních grup (ve 3 dimenzích) definovaný v jejím volaní?
 
 
 \section{Jaké paměti jsou na GPU a popište jejich vlastnosti (odkud je lze plnit, odkud je lze číst, relativní rychlost, relativní velikost).}
