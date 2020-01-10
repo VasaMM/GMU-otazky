@@ -41,32 +41,50 @@
 	\end{itemize}
 	
 
-\todo{Popište vývoj 2D/3D grafického řetězce s různým stupněm zřetězení.}
-	GMU 02
-	\begin{figure}[h]
-		\centering
-		\includegraphics[width=0.6\textwidth]{ZakladniKarta.png}
-		\caption{Základní 2D zpracování (IBM 8514)}
-		\label{fig:ZakladniKarta}
-	\end{figure}
-
-	\begin{figure}[h!]
-		\centering
-		\includegraphics[width=0.8\textwidth]{ackey.png}
-		\caption{Akeleyho pipeline}
-		\label{fig:ackey}
-	\end{figure}
-	generovanie $\rightarrow$ traverzacia $\rightarrow$ transformacia $\rightarrow$ rasterizadia $\rightarrow$ zobrazenie (display) Implementovana napr. u i740, Savage3D
+\section{Popište vývoj 2D/3D grafického řetězce s různým stupněm zřetězení.}
+	GTXRD = generování $\rightarrow$ traverzace (sledování paprsku) $\rightarrow$ transformace $\rightarrow$ rasterizace $\rightarrow$ zobrazení
+	
+	\subsection*{1980+}
+		fixed pipeline
+		
+	\subsection*{1990+}
+		první pokusy a zřetězení -- různé architektury = různé řešení \\
+		Např.:
+		\begin{itemize}
+			\setlength\itemsep{0em}
+			\item hluboký pipeline -- 15 úrovní zřetězení
+			\item paralelizace 2d a 3d řetězce
+			\item zdvojený řetězec - v každém cyklu 2 pixely
+		\end{itemize}
+	
+	\subsection*{2000+}
+		Převedení některých SW částí na hardware
+		\begin{itemize}
+			\setlength\itemsep{0em}
+			\item transformace, shading
+			\item interpolace snímku
+			\item vybírání, vytváření a vykrývání vrcholů
+			\item zavedení z-bufferu
+		\end{itemize}
+	
+	\subsection*{Současnost}
+		Klasická OpenGL pipeline
+		\begin{itemize}
+			\setlength\itemsep{0em}
+			\item programovatelné části -- vertex, geometry, control, evaluation, fragment shader, compute shader
+			\item konfigurovatelne casti -- teselace
+			\item možné extra buffery + transform feedback buffer, dispatch inderect buffer
+		\end{itemize}
 
 
 \section{Popište 1- až n-rozměrné multiprocesorové propojovací struktury (Origin/Onyx) a typy propojovacích sběrnic Silicon Graphics.}
 	\subsection*{Origin}
-		Propojovací struktura architektury koncepce Origin2000 umožnuje vytváret až 5D krychle. Díky její pružnosti a koncepcní pokrokovosti byla prevzata i do navazujících architektur SGI, jako napríklad Onyx2, a další.
+		Propojovací struktura architektury koncepce Origin2000 umožnuje vytváret až 5D krychle. Díky její pružnosti a koncepční pokrokovosti byla převzata i do navazujících architektur SGI, jako například Onyx2, a další.
 		
-		Architektura Origin2000 je tvorena množstvím výpoctových uzlu, propojených navzájem propojovací sítí CrayLink. Každý výpoctový uzel obsahuje jeden nebo dva procesory s pametí cache, sdílenou pamet, adresár pro rízení koherence cache s hlavní pametí a dve ruzné jednotky interface – jeden, XIO, který pripojuje I/O jednotky, a druhý, CrayLink, propojující uzly pres jednotku Router.
+		Architektura Origin2000 je tvořena množstvím výpočtových uzlů, propojených navzájem propojovací sítí CrayLink. Každý výpočtový uzel obsahuje jeden nebo dva procesory s pamětí cache, sdílenou paměť, adresář pro řízení koherence cache s hlavní pamětí a dvě různé jednotky interface –- jeden XIO, který připojuje I/O jednotky, a druhý CrayLink, propojující uzly přes jednotku Router.
 
 	\subsection*{Onyx2}
-		Každý procesor je spolu se svou pamětí cache a částí operační paměti počítače (o kapacitě od 128 MB do 8 GB) součástí jednoho procesorového uzlu, který obsahuje čtyři procesory. Obousměrný přenos dat mezi procesory v jednom uzlu dosahuje hodnoty 1,6 GBs-1, resp. 800 MBs-1 v každém směru zvlášť. Jednotlivé uzly jsou mezi sebou propojeny pomocí propojovací sítě, jejíž topologie sice vychází z ideální hyperkrychle, ale z důvodu optimalizace datových přenosů jsou mezi uzly vytvořeny i další přídavné datové spoje (již z principu musí jít o diagonály), zejména mezi procesory a zobrazovacími subsystémy.
+		Každý procesor je spolu se svou pamětí cache a částí operační paměti počítače (o kapacitě od 128 MB do 8 GB) součástí jednoho procesorového uzlu, který obsahuje čtyři procesory. Obousměrný přenos dat mezi procesory v jednom uzlu dosahuje hodnoty 1,6 GB/s, resp. 800 MB/s v každém směru zvlášť. Jednotlivé uzly jsou mezi sebou propojeny pomocí propojovací sítě, jejíž topologie sice vychází z ideální hyperkrychle, ale z důvodu optimalizace datových přenosů jsou mezi uzly vytvořeny i další přídavné datové spoje (již z principu musí jít o diagonály), zejména mezi procesory a zobrazovacími subsystémy.
 	
 
 \section{Popište principy výstavby, činnosti a použití GPGPU.}
@@ -80,6 +98,7 @@
 
 
 \section{Popište koncepci a vlastnosti různých typů Streaming Multiprocesoru}
+	\label{sec:streaming_multiprocesor}
 	Většinu plochy čipu GPU zabírá velké množství relativně jednoduchých skalárních procesorů, případně jednotek VLIW, které jsou organizovány do větších celků zvaných \emph{streaming multiprocesory}.
 	Vzhledem k tomu, že se jedná o architekturu SIMT, řízení jednotek a plánování instrukcí je jednoduché a spolu s velmi malou vyrovnávací pamětí zabírá malé procento plochy GPU čipu.
 	\begin{figure}[h!]
@@ -91,6 +110,7 @@
 	
 	
 \section{Popište principy komprese dat v systému Pascal (delta-komprese a další).}
+	\label{sec:komprese}
 	\textbf{Komprese v paměti cache L2} \\
 	Jsou uplatněny tři principy delta komprese barev. \\
 	GPU vypočítává rozdíly mezi barvami pixelů v bloku a ukládá blok jako referenční pixely plus delta hodnoty -- rozdíly od referenčních hodnot. \\
@@ -104,7 +124,21 @@
 	\end{itemize}	
 	
 	
-\todo{Popište architekturu grafických multiprocesorů a nové principy činnosti, jako komprese dat, preempce a její typy.}
+\section{Popište architekturu grafických multiprocesorů a nové principy činnosti, jako komprese dat, preempce a její typy.}
+	viz taky \ref{sec:streaming_multiprocesor}, \ref{sec:komprese} a \ref{sec:preempce}\\
+	
+	\subsection*{Preempce}
+		Preempce je v informatice přerušení právě vykonávaného procesu (úlohy) bez toho, aby byla vyžadována jeho spolupráce. Přerušená úloha je pozastavena, nahrazena jinou úlohou a později je pomocí stejného mechanismu její činnost opět obnovena.
+	
+		Preempce pracovní zátěže, např. pro časové posunutí (warp) ještě před vykreslením snímku. Používá se:
+		\begin{itemize}
+			\setlength\itemsep{0em}
+			\item Preempce na pixelové úrovni
+			\item Preempce na úrovni vláken
+			\item Preempce na úrovni instrukcí
+		\end{itemize}
+		%
+		V zásadě jde o pozastavení vykreslování, uložení kontextu, kde a jak později pokračovat, a rychle přejít na žádost o preempci. 
 	
 	
 \section{Popište princip tensorového jádra Turing, k čemu slouží, jaké formáty dat se používají.}
@@ -136,13 +170,15 @@
 	
 
 \section{Popište principy a funkce preempce Pascal.}
+	\label{sec:preempce}
+	Preempce je v informatice přerušení právě vykonávaného procesu (úlohy) bez toho, aby byla vyžadována jeho spolupráce. Přerušená úloha je pozastavena, nahrazena jinou úlohou a později je pomocí stejného mechanismu její činnost opět obnovena.
+
 	\subsection*{Výpočtová preempce}
 		Brání dlouho běžícím aplikacím ovládnout výlučným způsobem celý systém a znemožnit tak běh dalších aplikací, nebo časově překročit.
 	
 	\subsection*{Preempce pracovní zátěže}
 		V zásadě jde o pozastavení vykreslování, uložení kontextu, kde a jak později pokračovat, a rychle přejít na žádost o preempci.
 
-	
 	
 \section{Popište vývoj unifikovaného adresového prostoru, principy činnosti, a jeho hardwarovou podporu.}
 	\begin{itemize}
@@ -192,7 +228,6 @@
 		ARM Frame Buffer Compression je bezeztrátová kompresní metoda pro kompresi a dekompresi toku videa např. ve formátu H.264. Umožňuje přístup k datům v libovolném místě toku videa.
 	
 	Metoda AFBC je nyní dostupná pro všechny video stroje Mali, budoucí GPU Mali a jako licencovaný IP pro displejové procesory. 
-
 	
 	
 \section{Popište alespoň 3 rozdíly mezi architekturami GPU a CPU.}
@@ -274,7 +309,7 @@
 	\end{itemize}
 
 
-\todo{Jakým způsobem je možné synchronizovat úlohy ve frontě příkazů s vykonáváním mimo pořadí (out-of-order execution) nebo mezi frontami v OpenCL?}
+\section{Jakým způsobem je možné synchronizovat úlohy ve frontě příkazů s vykonáváním mimo pořadí (out-of-order execution) nebo mezi frontami v OpenCL?}
 	Pomocí eventů
 
 
@@ -301,8 +336,14 @@
 	viz \ref{subsec:lokalni_pamet}
 
 
-\todo{K čemu slouží texturovací jednotky?}
-	Urychleni prace s texturami, obsahuji operace specificke texturam – asi hlavne interpolaci a mozna i nejakou specifickou praci s pameti.
+\section{K čemu slouží texturovací jednotky?}	
+	Pod pojmem textura rozumíme dvourozměrný obrázek, který je určen k potahování předmětů a vytváření jejich reálného vzhledu. Vstupem do Texturovací části grafického pochodu je transformovaný a na trojúhelníky rozdělený osvícení a nastínovaný objekt (zpravidla ve stupních šedi, či v některém základních barevných tónů - RGB).
+	
+	Textura tudíž slouží jako tapeta, vzor povrchu, kterým se daný předmět potáhne (a může se jednat klidně o poloprůhlednou texturu vody, či kouře a nejen o klasickou představu cihlové zdi).
+	
+	V 95 \% případů nestačí klasická jedna textura jako mapa, reprezentující povrch objektu. Při zobrazení např. stínového přechodu se na texturu umísťují další a další vrstvy poloprůhledných textur (LightMap), které dávají objektu světelně přechodový vzhled (viz. kapitola o stínování). Problematické jsou vždy poloprůhledné a nesouvislé textury jako je kouř, voda, sklo, atd. V jednom cyklu tak vyvstává nutnost nanést až několik textur najednou, např. Textura + Průhledná textura + odrazová textura, atd. Obecně jsou na jednom pixelu navršeny až tři textury, při texturování složitějších částí jako již zmiňovaná voda může počet vrstev 6 i více.
+	
+	Čím více dokáže grafická karta v jednom cyklu nanést textur na pixel (Multitexturing), tím je větší pravděpodobnost, že celá operace texturování pixelu bude zvládnuta v tom samém cyklu.
 
 
 \todo{Jaké jsou rozdíly mezi bufferem a texturou v OpenCL?}
